@@ -90,7 +90,7 @@ jobs:
           data: '{
             "status": "success",
             "runId": "${{ github.run_id }}",
-            "inputs": ${{ toJson(github.event.inputs) }}
+            "id": ${{ github.event.inputs.id }}
           }'
           customHeaders: '{"Content-Type": "application/json"}'
           timeout: 15000
