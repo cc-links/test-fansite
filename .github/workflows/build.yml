@@ -7,10 +7,6 @@ on:
         description: 'MongoDB ID'
         required: true
         default: ''
-      env_var:
-        description: 'Env'
-        required: true
-        default: ''
 
 jobs:
   build:
@@ -30,7 +26,7 @@ jobs:
           data: '{
             "status": "in_progress",
             "runId": "${{ github.run_id }}",
-            "inputs": ${{ toJson(github.event.inputs) }}
+            "id": ${{ github.event.inputs.id }}
           }'
           customHeaders: '{"Content-Type": "application/json"}'
           timeout: 15000
