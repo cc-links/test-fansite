@@ -1,5 +1,8 @@
 name: Build
 
+on:
+  workflow_dispatch:
+    
 jobs:
   build:
     name: 构建任务
@@ -17,7 +20,6 @@ jobs:
           url: '${{ vars.FE_API }}/hb/repo/build/update'
           data: '{
             "runId": "${{ github.run_id }}",
-            "inputs": ${{ toJson(github.event.inputs) }}
           }'
           customHeaders: '{"Content-Type": "application/json"}'
           timeout: 15000
