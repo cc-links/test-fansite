@@ -5,11 +5,11 @@ on:
     inputs:
       id:
         description: 'MongoDB ID'
-        required: false
+        required: true
         default: ''
       env_var:
-        description: 'Build Env'
-        required: false
+        description: 'Env'
+        required: true
         default: ''
 
 jobs:
