@@ -1,26 +1,16 @@
-name: Build and Deploy Frontend
-
-# 手动触发 workflow
-on:
-  workflow_dispatch:
-    inputs:
-      id:
-        description: 'mongodb id'
-        required: false
-        default: ''
-      env_var:
-        description: 'env'
-        required: false
-        default: ''
+name: Build
 
 jobs:
   build:
+    name: 构建任务
     runs-on: ubuntu-latest
-    name: Build & Deploy Job
+
+    env:
+      NODE_VERSION: 22
+      YARN_VERSION: 4.9.2
 
     steps:
-      # 第一步：向 API 回传构建任务初始化状态
-      - name: 🔄 Notify Backend - Build Started
+      - name: 🔄 通知后端：构建开始
         uses: fjogeleit/http-request-action@v1
         with:
           method: POST
@@ -33,32 +23,26 @@ jobs:
           timeout: 15000
           maskResponse: true
 
-      # 第二步：拉取当前仓库代码
-      - name: 📥 Checkout Repository
+      - name: 📥 拉取仓库代码
         uses: actions/checkout@v2
 
-      # 第三步：安装 Node.js 环境
-      - name: 🧰 Setup Node.js 22
+      - name: 🧰 安装 Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v2
         with:
-          node-version: '22'
+          node-version: ${{ env.NODE_VERSION }}
 
-      # 第四步：启用 Corepack 并安装 Yarn v4.9.2
-      - name: 🧶 Enable Corepack & Use Yarn 4.9.2
+      - name: 🧶 启用 Corepack 并安装 Yarn ${{ env.YARN_VERSION }}
         run: |
           corepack enable
-          corepack prepare yarn@4.9.2 --activate
+          corepack prepare yarn@${{ env.YARN_VERSION }} --activate
 
-      # 第五步：移除旧的 yarn 配置
-      - name: 🧹 Remove Existing .yarnrc.yml
+      - name: 🧹 移除旧的 yarn 配置
         run: rm -rf .yarnrc.yml
 
-      # 第六步：创建空的配置文件
-      - name: 📄 Create Blank .yarnrc.yml
+      - name: 📄 创建空的 .yarnrc.yml 文件
         run: touch .yarnrc.yml
 
-      # 第七步：添加私有 NPM Token 配置
-      - name: 🔐 Add Private Registry Auth Config to .yarnrc.yml
+      - name: 🔐 配置私有 NPM Token
         run: |
           echo "nodeLinker: node-modules" >> .yarnrc.yml
           echo "" >> .yarnrc.yml
@@ -73,28 +57,18 @@ jobs:
           echo "    npmAuthToken: \"${{ secrets.NPM_TOKEN_XVISION }}\"" >> .yarnrc.yml
           echo "    npmRegistryServer: https://registry.npmjs.org" >> .yarnrc.yml
 
-      # 第八步：输出 yarn 配置内容，便于调试
-      - name: 📃 Debug .yarnrc.yml Content
-        run: |
-          echo "--- .yarnrc.yml content ---"
-          cat .yarnrc.yml
-
-      # 第九步：安装项目依赖
-      - name: 📦 Install Dependencies
+      - name: 📦 安装项目依赖
         run: yarn install
 
-      # 第十步：执行构建命令
-      - name: 🏗️ Run Build Script
+      - name: 🏗️ 执行构建命令
         run: ${{ vars.BUILD_SCRIPT }}
 
-      # 第十一步：配置 AWS 凭证用于后续上传
-      - name: 🔐 Configure AWS Credentials
+      - name: 🔐 配置 AWS 凭证
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      # 第十二步：将构建产物上传到 S3（指定 runId 子路径）
-      - name: ☁️ Upload to AWS S3
+      - name: ☁️ 上传构建产物至 S3（runId 路径）
         run: aws s3 sync dist ${{ vars.DIST_AWS_BUCKET_NAME }}/${{ github.run_id }}
