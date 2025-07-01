@@ -28,6 +28,7 @@ jobs:
           method: POST
           url: '${{ vars.FE_API }}/hb/repo/build/update'
           data: '{
+            "status": "in_progress",
             "runId": "${{ github.run_id }}",
             "inputs": ${{ toJson(github.event.inputs) }}
           }'
@@ -84,3 +85,17 @@ jobs:
 
       - name: ☁️ 上传构建产物至 S3（runId 路径）
         run: aws s3 sync dist ${{ vars.DIST_AWS_BUCKET_NAME }}/${{ github.run_id }}
+
+      - name: ✅ 通知后端：构建完成
+        uses: fjogeleit/http-request-action@v1
+        with:
+          method: POST
+          url: '${{ vars.FE_API }}/hb/repo/build/update'
+          data: '{
+            "status": "completed",
+            "runId": "${{ github.run_id }}",
+            "inputs": ${{ toJson(github.event.inputs) }}
+          }'
+          customHeaders: '{"Content-Type": "application/json"}'
+          timeout: 15000
+          maskResponse: true
