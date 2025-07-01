@@ -92,7 +92,7 @@ jobs:
           method: POST
           url: '${{ vars.FE_API }}/hb/repo/build/update'
           data: '{
-            "status": "completed",
+            "status": "success",
             "runId": "${{ github.run_id }}",
             "inputs": ${{ toJson(github.event.inputs) }}
           }'
