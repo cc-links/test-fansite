@@ -63,10 +63,10 @@ jobs:
           echo "  hbdevs:" >> .yarnrc.yml
           echo "    npmAuthToken: \"${{ secrets.NPM_TOKEN_HBDEV }}\"" >> .yarnrc.yml
           echo "    npmRegistryServer: https://registry.npmjs.org" >> .yarnrc.yml
-          echo "  x-vision:" >> .yarnrc.yml
+          echo "  hb-common:" >> .yarnrc.yml
           echo "    npmAuthToken: \"${{ secrets.NPM_TOKEN_XVISION }}\"" >> .yarnrc.yml
           echo "    npmRegistryServer: https://registry.npmjs.org" >> .yarnrc.yml
-          echo "  hb-common:" >> .yarnrc.yml
+          echo "  x-vision:" >> .yarnrc.yml
           echo "    npmAuthToken: \"${{ secrets.NPM_TOKEN_XVISION }}\"" >> .yarnrc.yml
           echo "    npmRegistryServer: https://registry.npmjs.org" >> .yarnrc.yml
 
