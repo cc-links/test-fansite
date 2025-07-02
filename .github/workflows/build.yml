@@ -26,7 +26,7 @@ jobs:
           data: >-
             {
               "status": "in_progress",
-              "runId": "${{ github.run_id }}",
+              "run_id": "${{ github.run_id }}",
               "id": "${{ github.event.inputs.id }}"
             }
           customHeaders: '{"Content-Type": "application/json"}'
@@ -91,7 +91,7 @@ jobs:
           url: '${{ vars.FE_API }}/repo/build/update'
           data: '{
             "status": "success",
-            "runId": "${{ github.run_id }}",
+            "run_id": "${{ github.run_id }}",
             "id": "${{ github.event.inputs.id }}"
           }'
           customHeaders: '{"Content-Type": "application/json"}'
