@@ -3,10 +3,6 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      id:
-        description: 'MongoDB ID'
-        required: true
-        default: ''
       run_id:
         description: 'Run ID'
         required: true
@@ -31,7 +27,6 @@ jobs:
           data: '{
             "status": "in_progress",
             "run_id": "${{ github.event.inputs.run_id }}",
-            "id": "${{ github.event.inputs.id }}"
           }'
           customHeaders: '{"Content-Type": "application/json"}'
           timeout: 15000
@@ -70,7 +65,6 @@ jobs:
           data: '{
             "status": "success",
             "run_id": "${{ github.event.inputs.run_id }}",
-            "id": "${{ github.event.inputs.id }}"
           }'
           customHeaders: '{"Content-Type": "application/json"}'
           timeout: 15000
