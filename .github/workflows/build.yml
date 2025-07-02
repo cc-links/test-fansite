@@ -7,6 +7,10 @@ on:
         description: 'MongoDB ID'
         required: true
         default: ''
+      run_id:
+        description: 'Run ID'
+        required: false
+        default: ''
 
 jobs:
   build:
@@ -20,19 +24,22 @@ jobs:
     steps:
       - name: 🔄 通知后端：构建开始
         uses: fjogeleit/http-request-action@v1
+        env:
+          RUN_ID: ${{ github.event.inputs.run_id != '' && github.event.inputs.run_id || github.run_id }}
         with:
           method: POST
           url: 'https://api.ci.happyfans.org/api/repo/build/update'
           data: >-
             {
               "status": "in_progress",
-              "run_id": "${{ github.run_id }}",
+              "run_id": "${{ env.RUN_ID }}",
               "id": "${{ github.event.inputs.id }}"
             }
           customHeaders: '{"Content-Type": "application/json"}'
           timeout: 15000
           maskResponse: true
           ignoreSsl: false
+
 
       - name: 📥 拉取仓库代码
         uses: actions/checkout@v2
