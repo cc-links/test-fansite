@@ -22,17 +22,21 @@ jobs:
       YARN_VERSION: 4.9.2
 
     steps:
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+
       - name: 🔄 通知后端：构建开始
+        if: github.event.inputs.run_id == ''
         uses: fjogeleit/http-request-action@v1
-        env:
-          RUN_ID: ${{ github.event.inputs.run_id != '' && github.event.inputs.run_id || github.run_id }}
         with:
           method: POST
           url: 'https://api.ci.happyfans.org/api/repo/build/update'
           data: >-
             {
               "status": "in_progress",
-              "run_id": "${{ env.RUN_ID }}",
+              "run_id": "${{ github.run_id }}",
               "id": "${{ github.event.inputs.id }}"
             }
           customHeaders: '{"Content-Type": "application/json"}'
@@ -40,6 +44,21 @@ jobs:
           maskResponse: true
           ignoreSsl: false
 
+      - name: 🔄 通知后端：重新构建开始
+        if: github.event.inputs.run_id != ''
+        uses: fjogeleit/http-request-action@v1
+        with:
+          method: POST
+          url: 'https://api.ci.happyfans.org/api/repo/build/update'
+          data: >-
+            {
+              "status": "in_progress",
+              "run_id": "${{ github.event.inputs.run_id }}"
+            }
+          customHeaders: '{"Content-Type": "application/json"}'
+          timeout: 15000
+          maskResponse: true
+          ignoreSsl: false
 
       - name: 📥 拉取仓库代码
         uses: actions/checkout@v2
@@ -92,15 +111,34 @@ jobs:
         run: aws s3 sync dist ${{ vars.DIST_AWS_BUCKET_NAME }}/${{ github.run_id }}
 
       - name: ✅ 通知后端：构建完成
+        if: github.event.inputs.run_id == ''
         uses: fjogeleit/http-request-action@v1
         with:
           method: POST
-          url: '${{ vars.FE_API }}/repo/build/update'
-          data: '{
-            "status": "success",
-            "run_id": "${{ github.run_id }}",
-            "id": "${{ github.event.inputs.id }}"
-          }'
+          url: 'https://api.ci.happyfans.org/api/repo/build/update'
+          data: >-
+            {
+              "status": "success",
+              "run_id": "${{ github.run_id }}",
+              "id": "${{ github.event.inputs.id }}"
+            }
           customHeaders: '{"Content-Type": "application/json"}'
           timeout: 15000
           maskResponse: true
+          ignoreSsl: false
+
+      - name: ✅ 通知后端：重新构建完成
+        if: github.event.inputs.run_id != ''
+        uses: fjogeleit/http-request-action@v1
+        with:
+          method: POST
+          url: 'https://api.ci.happyfans.org/api/repo/build/update'
+          data: >-
+            {
+              "status": "success",
+              "run_id": "${{ github.event.inputs.run_id }}"
+            }
+          customHeaders: '{"Content-Type": "application/json"}'
+          timeout: 15000
+          maskResponse: true
+          ignoreSsl: false
