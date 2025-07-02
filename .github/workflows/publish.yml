@@ -26,7 +26,7 @@ jobs:
           url: '${{ vars.FE_API }}/repo/publish/update'
           data: '{
             "status": "in_progress",
-            "run_id": "${{ github.event.inputs.run_id }}",
+            "run_id": "${{ github.event.inputs.run_id }}"
           }'
           customHeaders: '{"Content-Type": "application/json"}'
           timeout: 15000
@@ -64,7 +64,7 @@ jobs:
           url: '${{ vars.FE_API }}/repo/publish/update'
           data: '{
             "status": "success",
-            "run_id": "${{ github.event.inputs.run_id }}",
+            "run_id": "${{ github.event.inputs.run_id }}"
           }'
           customHeaders: '{"Content-Type": "application/json"}'
           timeout: 15000
