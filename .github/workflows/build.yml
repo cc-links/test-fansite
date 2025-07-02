@@ -22,10 +22,6 @@ jobs:
       YARN_VERSION: 4.9.2
 
     steps:
-jobs:
-  notify:
-    runs-on: ubuntu-latest
-    steps:
 
       - name: 🔄 通知后端：构建开始
         if: github.event.inputs.run_id == ''
