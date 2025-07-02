@@ -1,4 +1,4 @@
-name: Release
+name: Publish
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ on:
         default: ''
 
 jobs:
-  release:
+  publish:
     name: 发布任务
     runs-on: ubuntu-latest
 
