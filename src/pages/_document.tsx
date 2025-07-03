@@ -11,7 +11,7 @@ export default function Document() {
       </Head>
 
       <body>
-        <div>213123121111111111312312</div>
+        <div></div>
         <Main />
         <NextScript />
       </body>
