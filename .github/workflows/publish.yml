@@ -54,8 +54,16 @@ jobs:
       - name: ☁️ 上传构建产物
         run: |
           FOLDER=${{ steps.pick_publish_folder.outputs.folder }}
-          aws s3 sync ${{ vars.DIST_AWS_BUCKET_NAME }}/${{ github.event.inputs.runId }} ${{ vars.TARGET_BUCKET_NAME }}/$FOLDER/ --exclude "*.html"
-          aws s3 cp ${{ vars.DIST_AWS_BUCKET_NAME }}/${{ github.event.inputs.runId }}/ ${{ vars.TARGET_BUCKET_NAME }}/$FOLDER --recursive --exclude "*" --include "*.html" --cache-control no-store
+          SOURCE=${{ vars.DIST_AWS_BUCKET_NAME }}/${{ github.event.inputs.runId }}
+          TARGET=${{ vars.TARGET_BUCKET_NAME }}/$FOLDER
+
+          # 同步非 HTML 文件（可缓存）
+          aws s3 sync $SOURCE $TARGET --exclude "*.html"
+
+          # 拷贝 HTML 文件（禁止缓存）
+          aws s3 cp $SOURCE/ $TARGET --recursive \
+            --exclude "*" --include "*.html" \
+            --cache-control no-store
 
       - name: ✅ 通知后端：发布完成
         uses: fjogeleit/http-request-action@v1
